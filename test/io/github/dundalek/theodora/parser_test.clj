@@ -10,7 +10,7 @@
   (is (= "some\"name" (parser/unescape-string "\"some\\\"name\"")))
   (is (= "some\\foo" (parser/unescape-string "\"some\\foo\"")))
   (is (= "so\"me\\foo" (parser/unescape-string "\"so\\\"me\\foo\"")))
-  (is (= "new\nline" (parser/unescape-string "\"new\\nline\""))))
+  (is (= "new\\nline" (parser/unescape-string "\"new\\nline\""))))
 
 (deftest parse
   (is (= {:id "some_name" :statements [] :strict? false :type :dorothy.core/graph}

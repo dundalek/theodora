@@ -19,15 +19,12 @@
 (defn unescape-string [s]
   (assert (<= 2 (count s)))
   (-> s
+      ;; strip enclosing quotes
       (subs 1 (dec (count s)))
-      (str/replace #"\\[\"n]"
-                   (fn [s]
-                     (case s
-                       ;; Cannot unescape backslashes, because converting back
-                       ;; would be ambiguous since graphviz has sequences like \G \E \T \H \L \l
-                       ;; https://graphviz.org/docs/attr-types/escString/
-                       "\\\"" "\""
-                       "\\n" "\n")))))
+      ;; Only unescaping quoutes. Cannot unescape backslashes, because converting back
+      ;; would be ambiguous since graphviz has sequences like \G \E \T \H \L \l
+      ;; https://graphviz.org/docs/attr-types/escString/
+      (str/replace #"\\\"" "\"")))
 
 (defmulti transform first)
 

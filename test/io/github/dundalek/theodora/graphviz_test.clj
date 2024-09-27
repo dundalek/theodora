@@ -30,9 +30,6 @@
     "2471.dot" ; pretty large graph, not sure what is wrong
     "2239.dot" ; pretty large graph, not sure what is wrong, could it be nested subgraphs?
 
-    ; \N escape sequence
-    "2193.dot"
-
     "2516.dot" ; invalid HTML in attribute
 
     ;; https://github.com/daveray/dorothy/issues/18
