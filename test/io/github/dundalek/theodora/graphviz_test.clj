@@ -16,13 +16,15 @@
 (defmacro with-timeout [& body]
   `(.get (future ~@body) 5 TimeUnit/SECONDS))
 
-(def syntax-error-files
-  #{"1845.dot" ; contains two toplevel `digraphs`, graphviz renders only the first one and ignores the second one, we get parser error
-    "1676.dot" ; seems like invalid utf8 encoding, antlr does not like it: token recognition error
+(def syntax-error-filenames
+  #{"1676.dot" ; seems like invalid utf8 encoding, antlr does not like it: token recognition error
     "1411.dot" ; file has syntax error
-    "1308_1.dot"}) ; file has syntax error
+    "1308_1.dot" ; file has syntax error
 
-(def ignored-files
+    ;; contains two toplevel `digraphs`, graphviz renders only the first one and ignores the second one, we get parser error
+    "1845.dot"})
+
+(def ignored-filenames
   #{"1332.dot" ; looks visually same
     "1879.dot" ; looks visually same
 
@@ -32,19 +34,28 @@
 
     "2516.dot" ; invalid HTML in attribute
 
-    ;; https://github.com/daveray/dorothy/issues/18
-    "2563.dot" ; node and edge need to be escaped: `node [class=node]` -> `node [class="node"]` (dorothy issue)
-    "grdlinear.gv"}) ; likely need to escape `graph [label=Graph];`
+    "html2.dot" ; problem with html label, does not get detected as html `label=<long line 1<BR/>line 2<BR ALIGN="LEFT"/>line 3<BR ALIGN="RIGHT"/>>`
 
-(def test-files
+    "polypoly.gv" ; numeric ids like`0000`, leading zeroes get stripped results as `0`
+    "root.gv" ; `label=07` gets changed to `label=7`
+
+    ;; contains two toplevel `digraphs`, graphviz renders only the first one and ignores the second one, we get parser error
+    "multi.gv"
+
+    "russian.gv"}) ; would it need to update ranges in grammar?
+
+(def all-test-files
   (->> (concat
-        (fs/glob "." "tmp/graphviz/tests/*.dot"))
-        ; (fs/glob "." "tmp/graphviz/tests/graphs/*.gv"))
-       (remove (comp (into ignored-files syntax-error-files) fs/file-name))
+        (fs/glob "." "tmp/graphviz/tests/*.dot")
+        (fs/glob "." "tmp/graphviz/tests/graphs/*.gv"))
        (sort-by fs/file-name)))
 
+(def test-files
+  (->> all-test-files
+       (remove (comp (into ignored-filenames syntax-error-filenames) fs/file-name))))
+
 (deftest syntax-errors
-  (doseq [file syntax-error-files]
+  (doseq [file syntax-error-filenames]
     (let [input (slurp (fs/file "tmp/graphviz/tests" file))]
       (testing (str file)
         (is (thrown? ParseError (dc/dot (parser/parse input))))))))
