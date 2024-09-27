@@ -8,8 +8,8 @@
 (deftest unescape-string
   (is (= "some_name" (parser/unescape-string "\"some_name\"")))
   (is (= "some\"name" (parser/unescape-string "\"some\\\"name\"")))
-  (is (= "some\\name" (parser/unescape-string "\"some\\\\name\"")))
-  (is (= "so\"me\\name" (parser/unescape-string "\"so\\\"me\\\\name\"")))
+  (is (= "some\\foo" (parser/unescape-string "\"some\\foo\"")))
+  (is (= "so\"me\\foo" (parser/unescape-string "\"so\\\"me\\foo\"")))
   (is (= "new\nline" (parser/unescape-string "\"new\\nline\""))))
 
 (deftest parse

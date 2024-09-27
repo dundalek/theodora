@@ -9,9 +9,7 @@
                 (constantly
                  (fn [s]
                    (-> s
-                       (str/replace "\\" "\\\\")
                        (str/replace "\n" "\\n")
-                       (str/replace "\r" "\\r")
                        (str/replace "\"" "\\\"")))))
 
 (defn normalize-whitespace [s]

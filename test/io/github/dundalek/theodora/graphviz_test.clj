@@ -32,14 +32,6 @@
 
     ; \N escape sequence
     "2193.dot"
-    "Heawood.gv"
-    "Petersen.gv"
-    "dd.gv"
-    "viewport.gv"
-    ;; https://graphviz.org/docs/attr-types/escString/
-    ;; there are also \G \E \T \H \L
-    ;; and \l \r
-    "url.gv"
 
     "2516.dot" ; invalid HTML in attribute
 
@@ -80,6 +72,7 @@
                  :attrs
                  (get "label")))
 
+  ;; mkdir -p tmp/{dot,svg}/{actual,expected}
   (doseq [file test-files]
     (try
       (println "Processing" (fs/file-name file))
@@ -89,8 +82,8 @@
         (spit (str "tmp/dot/expected/" (fs/file-name file)) input)
         (spit (str "tmp/dot/actual/" (fs/file-name file)) out)
         (with-timeout
-          (spit (str "tmp/expected/" filename) (svg input)))
+          (spit (str "tmp/svg/expected/" filename) (svg input)))
         (with-timeout
-          (spit (str "tmp/actual/" filename) (svg out))))
+          (spit (str "tmp/svg/actual/" filename) (svg out))))
       (catch Exception _e
         (println "Failed on" file)))))

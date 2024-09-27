@@ -20,13 +20,14 @@
   (assert (<= 2 (count s)))
   (-> s
       (subs 1 (dec (count s)))
-      (str/replace #"\\[\\\"nr]"
+      (str/replace #"\\[\"n]"
                    (fn [s]
                      (case s
-                       "\\\\" "\\"
+                       ;; Cannot unescape backslashes, because converting back
+                       ;; would be ambiguous since graphviz has sequences like \G \E \T \H \L \l
+                       ;; https://graphviz.org/docs/attr-types/escString/
                        "\\\"" "\""
-                       "\\n" "\n"
-                       "\\r" "\r")))))
+                       "\\n" "\n")))))
 
 (defmulti transform first)
 
