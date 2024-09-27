@@ -6,5 +6,6 @@
 
  :aliases
  {:test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.77.1236"}
+                      babashka/fs {:mvn/version "0.5.22"}
                       dorothy/dorothy {:mvn/version "0.0.7"}}
          :main-opts ["-m" "kaocha.runner"]}}}

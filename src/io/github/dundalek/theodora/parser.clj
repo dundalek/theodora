@@ -20,8 +20,13 @@
   (assert (<= 2 (count s)))
   (-> s
       (subs 1 (dec (count s)))
-      (str/replace #"\\\"" "\"")
-      (str/replace #"\\\\" "\\\\")))
+      (str/replace #"\\[\\\"nr]"
+                   (fn [s]
+                     (case s
+                       "\\\\" "\\"
+                       "\\\"" "\""
+                       "\\n" "\n"
+                       "\\r" "\r")))))
 
 (defmulti transform first)
 
