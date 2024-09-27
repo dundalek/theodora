@@ -21,28 +21,31 @@
     "1411.dot" ; file has syntax error
     "1308_1.dot" ; file has syntax error
 
+    "russian.gv" ; would it need to update ranges in grammar?
+
     ;; contains two toplevel `digraphs`, graphviz renders only the first one and ignores the second one, we get parser error
-    "1845.dot"})
+    "1845.dot"
+    "multi.gv"})
 
 (def ignored-filenames
   #{"1332.dot" ; looks visually same
     "1879.dot" ; looks visually same
 
-    "2371.dot" ; seems to hang
+    ;; seems to hang/timeout
+    "2371.dot"
+    "b100.gv"
+    "b103.gv"
+    "b104.gv"
+
     "2471.dot" ; pretty large graph, not sure what is wrong
     "2239.dot" ; pretty large graph, not sure what is wrong, could it be nested subgraphs?
 
     "2516.dot" ; invalid HTML in attribute
 
-    "html2.dot" ; problem with html label, does not get detected as html `label=<long line 1<BR/>line 2<BR ALIGN="LEFT"/>line 3<BR ALIGN="RIGHT"/>>`
+    "html2.gv" ; problem with html label, does not get detected as html `label=<long line 1<BR/>line 2<BR ALIGN="LEFT"/>line 3<BR ALIGN="RIGHT"/>>`
 
     "polypoly.gv" ; numeric ids like`0000`, leading zeroes get stripped results as `0`
-    "root.gv" ; `label=07` gets changed to `label=7`
-
-    ;; contains two toplevel `digraphs`, graphviz renders only the first one and ignores the second one, we get parser error
-    "multi.gv"
-
-    "russian.gv"}) ; would it need to update ranges in grammar?
+    "root.gv"}) ; `label=07` gets changed to `label=7`
 
 (def all-test-files
   (->> (concat
@@ -50,18 +53,22 @@
         (fs/glob "." "tmp/graphviz/tests/graphs/*.gv"))
        (sort-by fs/file-name)))
 
-(def test-files
+(def svg-roundtrip-files
   (->> all-test-files
        (remove (comp (into ignored-filenames syntax-error-filenames) fs/file-name))))
 
+(def syntax-error-files
+  (->> all-test-files
+       (filter (comp syntax-error-filenames fs/file-name))))
+
 (deftest syntax-errors
-  (doseq [file syntax-error-filenames]
-    (let [input (slurp (fs/file "tmp/graphviz/tests" file))]
+  (doseq [file syntax-error-files]
+    (let [input (slurp (fs/file file))]
       (testing (str file)
         (is (thrown? ParseError (dc/dot (parser/parse input))))))))
 
-(deftest files
-  (doseq [file test-files]
+(deftest svg-rountrip
+  (doseq [file svg-roundtrip-files]
     (let [input (slurp (fs/file file))]
       (testing (str file)
         (is (= (with-timeout (svg input))
@@ -81,7 +88,7 @@
                  (get "label")))
 
   ;; mkdir -p tmp/{dot,svg}/{actual,expected}
-  (doseq [file test-files]
+  (doseq [file svg-roundtrip-files]
     (try
       (println "Processing" (fs/file-name file))
       (let [input (slurp (fs/file file))

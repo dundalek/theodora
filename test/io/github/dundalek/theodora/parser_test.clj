@@ -53,6 +53,9 @@
     "graph { -42; }"
     "graph { 42.69; }"
     "graph { -42.69; }"
+    ;; numeric id with leading zeros
+    ; "graph { 000; }"
+    ; "graph { 001; }"
 
     ;; id_ HTML_STRING
     "graph { A [label=<<b>bold label</b>>]; }"
@@ -72,8 +75,6 @@
     ;; a_list 	: 	ID '=' ID [ (';' | ',') ] [ a_list ]
     ;  "graph { a [fixedsize] }"))
     ;  "graph { a [fixedsize=] }"))
-    ; also does not support semicolon as a separator
-    ;  "graph { A [color=blue;label=hello] }"))
 
     ;; node_stmt with port and attr list
     "graph { A:port [color=blue]; }"
@@ -161,4 +162,9 @@
     "graph { subgraph { } ; }"
 
     "digraph { { A -> B } }"
-    "digraph { subgraph { A -> B; } ; }"))
+    "digraph { subgraph { A -> B; } ; }"
+
+    ; semicolon as an attribute separator
+    "graph { A [color=blue;label=hello] }"
+    "graph { A [color=blue,label=hello]; }"))
+
