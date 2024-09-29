@@ -1,2 +1,9 @@
 #kaocha/v1
- {:reporter io.github.dundalek.theodora.report/edots}
+ {:reporter io.github.dundalek.theodora.report/edots
+  :tests
+  [{:id :unit
+    :source-paths ["src"]
+    :test-paths ["test/src"]
+    :skip-meta [:skip]
+    :focus-meta [:focus]}]}
+

@@ -9,5 +9,5 @@
                       lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}
                       babashka/fs {:mvn/version "0.5.22"}
                       dorothy/dorothy {:mvn/version "0.0.7"}}
-         :extra-paths ["test"]
+         :extra-paths ["test/src"]
          :main-opts ["-m" "kaocha.runner"]}}}
