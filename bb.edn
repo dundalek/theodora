@@ -1,3 +1,18 @@
-{:tasks {test (clojure "-M:test --watch") #_(clojure "-M:test --plugin notifier --watch")
-         test:once (clojure "-M:test")
-         test:coverage (clojure "-M:test --plugin cloverage")}}
+{:tasks
+ {test
+  {:task (clojure "-M:test --watch") #_(clojure "-M:test --plugin notifier --watch")
+   :depends [ensure-graphviz-source]}
+
+  test:once
+  {:task (clojure "-M:test")
+   :depends [ensure-graphviz-source]}
+
+  test:coverage
+  {:task (clojure "-M:test --plugin cloverage")
+   :depends [ensure-graphviz-source]}
+
+  ensure-graphviz-source
+  (let [graphviz-dir "tmp/graphviz"]
+    (when-not (babashka.fs/directory? graphviz-dir)
+      (babashka.process/shell
+       "git clone https://gitlab.com/graphviz/graphviz.git --depth 1 --branch 12.0.0" graphviz-dir)))}}
