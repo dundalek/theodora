@@ -77,6 +77,10 @@
   (->> all-test-files
        (filter (comp syntax-error-filenames path-in-test-dir))))
 
+(def transform-roundtrip-files
+  (->> all-test-files
+       (remove (comp syntax-error-filenames path-in-test-dir))))
+
 (deftest syntax-errors
   (doseq [file syntax-error-files]
     (testing (str file)
@@ -91,6 +95,13 @@
         ;        (with-timeout (svg (dc/dot (parser/parse input))))))
         (is (= (svg input)
                (svg (dc/dot (parser/parse input)))))))))
+
+(deftest transform-rountrip
+  (doseq [file transform-roundtrip-files]
+    (testing (str file)
+      (let [input (slurp (fs/file file))
+            transformed (dc/dot (parser/parse input))]
+        (is (= transformed (dc/dot (parser/parse transformed))))))))
 
 (comment
   (def file (fs/file "tmp/graphviz/tests/1845.dot"))
