@@ -5,8 +5,8 @@
    [clojure.string :as str]
    [clojure.test :refer [deftest is testing]]
    [dorothy.core :as dc]
-   [io.github.dundalek.theodora.parser :as parser]
-   [io.github.dundalek.theodora.test-utils])
+   [io.github.dundalek.theodora.test-utils]
+   [theodora.core :as core])
   (:import
    (clj_antlr ParseError)
    (java.util.concurrent TimeUnit)))
@@ -85,7 +85,7 @@
   (doseq [file syntax-error-files]
     (testing (str file)
       (let [input (slurp (fs/file file))]
-        (is (thrown? ParseError (dc/dot (parser/parse input))))))))
+        (is (thrown? ParseError (dc/dot (core/parse input))))))))
 
 (deftest svg-rountrip
   (doseq [file svg-roundtrip-files]
@@ -94,23 +94,23 @@
         ; (is (= (with-timeout (svg input))
         ;        (with-timeout (svg (dc/dot (parser/parse input))))))
         (is (= (svg input)
-               (svg (dc/dot (parser/parse input)))))))))
+               (svg (dc/dot (core/parse input)))))))))
 
 (deftest transform-rountrip
   (doseq [file transform-roundtrip-files]
     (testing (str file)
       (let [input (slurp (fs/file file))
-            transformed (dc/dot (parser/parse input))]
-        (is (= transformed (dc/dot (parser/parse transformed))))))))
+            transformed (dc/dot (core/parse input))]
+        (is (= transformed (dc/dot (core/parse transformed))))))))
 
 (comment
   (def file (fs/file "tmp/graphviz/tests/1845.dot"))
 
-  (spit "tmp/simplex.dot" (dc/dot (parser/parse (slurp file))))
+  (spit "tmp/simplex.dot" (dc/dot (core/parse (slurp file))))
   (= (slurp file)
-     (dc/dot (parser/parse (slurp file))))
+     (dc/dot (core/parse (slurp file))))
 
-  (def label (-> (parser/parse (slurp file))
+  (def label (-> (core/parse (slurp file))
                  :statements
                  first
                  :attrs
@@ -122,7 +122,7 @@
       (println "Processing" (path-in-test-dir file))
       (let [input (slurp (fs/file file))
             filename (str (path-in-test-dir file) ".svg")
-            out (dc/dot (parser/parse input))]
+            out (dc/dot (core/parse input))]
         (spit (str "tmp/dot/expected/" (path-in-test-dir file)) input)
         (spit (str "tmp/dot/actual/" (path-in-test-dir file)) out)
         (with-timeout

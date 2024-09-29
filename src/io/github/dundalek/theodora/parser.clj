@@ -1,4 +1,4 @@
-(ns io.github.dundalek.theodora.parser
+(ns ^:no-doc io.github.dundalek.theodora.parser
   (:require
    [clj-antlr.core :as antlr]
    [clojure.java.io :as io]

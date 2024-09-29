@@ -1,5 +1,5 @@
 ;; Based on https://github.com/aphyr/clj-antlr/blob/master/src/clj_antlr/coerce.clj
-(ns io.github.dundalek.theodora.antlr-coerce
+(ns ^:no-doc io.github.dundalek.theodora.antlr-coerce
   (:require
    [clj-antlr.coerce :as coerce]
    [clj-antlr.common :as c])

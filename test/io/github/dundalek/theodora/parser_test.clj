@@ -1,9 +1,10 @@
 (ns io.github.dundalek.theodora.parser-test
   (:require
    [clojure.test :refer [are deftest is]]
+   [dorothy.core :as dc]
    [io.github.dundalek.theodora.parser :as parser]
    [io.github.dundalek.theodora.test-utils :as utils]
-   [dorothy.core :as dc]))
+   [theodora.core :as core]))
 
 (deftest unescape-string
   (is (= "some_name" (parser/unescape-string "\"some_name\"")))
@@ -14,7 +15,7 @@
 
 (deftest parse
   (is (= {:id "some_name" :statements [] :strict? false :type :dorothy.core/graph}
-         (parser/parse "graph some_name { }")))
+         (core/parse "graph some_name { }")))
 
   (is (= {:id nil
           :statements [{:attrs {}
@@ -27,10 +28,10 @@
                         :type :dorothy.core/edge}]
           :strict? false
           :type :dorothy.core/digraph}
-         (parser/parse "digraph { A -> B; B -> C; }"))))
+         (core/parse "digraph { A -> B; B -> C; }"))))
 
 (deftest parser-roundtrip
-  (are [input] (= input (-> input parser/parse dc/dot utils/normalize-whitespace))
+  (are [input] (= input (-> input core/parse dc/dot utils/normalize-whitespace))
 
     ;; blank graph
     "graph { }"
@@ -106,7 +107,7 @@
     "graph { subgraph some_sub_name { } ; }"))
 
 (deftest parser-roundtrip-significant-whitespace
-  (are [input] (= input (-> input parser/parse dc/dot))
+  (are [input] (= input (-> input core/parse dc/dot))
     ;; attribute with newline escape
     "graph {\nA [label=\"new\\nline\\r\"];\n} "
 
@@ -116,7 +117,7 @@
     "graph {\nA [label=\"double back slash in label \\\\.\"];\n} "))
 
 (deftest parser
-  (are [input expected] (= expected (-> input parser/parse dc/dot utils/normalize-whitespace))
+  (are [input expected] (= expected (-> input core/parse dc/dot utils/normalize-whitespace))
 
     ;; Casing is insensitive, but gets normalized to lowercase
     "STRICT GRAPH {}"
