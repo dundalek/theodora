@@ -8,7 +8,7 @@
 
 (defn make-parser []
   (antlr/parser
-   (slurp (io/resource "DOT.g4"))
+   (slurp (io/resource "io/github/dundalek/theodora/DOT.g4"))
    ;; Using monkey-patched variation of clj-antlr.coerce/tree->sexpr to keep tags for string terminals.
    {:format helper/tree->sexpr}))
 
