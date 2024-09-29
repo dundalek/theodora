@@ -1,5 +1,6 @@
 (ns io.github.dundalek.theodora.parser-test
   (:require
+   [clojure.java.io :as io]
    [clojure.test :refer [are deftest is]]
    [dorothy.core :as dc]
    [io.github.dundalek.theodora.parser :as parser]
@@ -169,3 +170,12 @@
     "graph { A [color=blue;label=hello] }"
     "graph { A [color=blue,label=hello]; }"))
 
+(deftest parse-from-reader
+  (is (= {:id "example"
+          :statements [{:attrs {}
+                        :node-ids [{:id "A" :type :dorothy.core/node-id}
+                                   {:id "B" :type :dorothy.core/node-id}]
+                        :type :dorothy.core/edge}]
+          :strict? false
+          :type :dorothy.core/digraph}
+         (core/parse (io/reader "test/resources/graph.dot")))))
