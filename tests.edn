@@ -1,0 +1,2 @@
+#kaocha/v1
+ {:reporter io.github.dundalek.theodora.report/edots}
