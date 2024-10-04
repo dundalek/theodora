@@ -1,6 +1,7 @@
 (ns io.github.dundalek.theodora.test-utils
   (:require
    [clojure.string :as str]
+   [clojure.java.shell :refer [sh]]
    [dorothy.core :as dc]))
 
 ;; Hacky monkey-patching, try to contribute upstream to Dorothy
@@ -19,3 +20,9 @@
 
 (defn normalize-whitespace [s]
   (-> s str/trim (str/replace #"\s+" " ")))
+
+(defn svg [s]
+  (:out (sh  "dot" "-Tsvg" :in s)))
+
+(defmacro with-timeout [& body]
+  `(.get (future ~@body) 5 TimeUnit/SECONDS))

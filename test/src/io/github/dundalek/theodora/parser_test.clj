@@ -179,3 +179,9 @@
           :strict? false
           :type :dorothy.core/digraph}
          (core/parse (io/reader "test/resources/graph.dot")))))
+
+(deftest manipulating-parsed-graph
+  (is (= "digraph hello {\nA -> B;\n} "
+         (-> (core/parse "digraph example { A -> B }")
+             (assoc :id "hello")
+             (dc/dot)))))

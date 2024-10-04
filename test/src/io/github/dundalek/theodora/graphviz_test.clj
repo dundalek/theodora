@@ -1,21 +1,16 @@
 (ns io.github.dundalek.theodora.graphviz-test
   (:require
    [babashka.fs :as fs]
-   [clojure.java.shell :refer [sh]]
-   [clojure.string :as str]
    [clojure.test :refer [deftest is testing]]
    [dorothy.core :as dc]
-   [io.github.dundalek.theodora.test-utils]
+   [io.github.dundalek.theodora.test-utils :as utils]
    [theodora.core :as core])
   (:import
-   (clj_antlr ParseError)
-   (java.util.concurrent TimeUnit)))
+   (clj_antlr ParseError)))
 
-(defn svg [s]
-  (:out (sh  "dot" "-Tsvg" :in s)))
-
-(defmacro with-timeout [& body]
-  `(.get (future ~@body) 5 TimeUnit/SECONDS))
+;; Location of tests folder from graphviz containing graph fixtures.
+;; Cloned automatically when running tests using bb tasks.
+(def graphviz-test-dir "tmp/graphviz/tests")
 
 (def syntax-error-filenames
   #{;; seems like invalid utf8 encoding (graphviz has fallbacks and -Gcharset=latin1 option)
@@ -48,17 +43,14 @@
     "2239.dot" ; pretty large graph, not sure what is wrong, could it be nested subgraphs?
 
     "2516.dot" ; invalid HTML in attribute
-
     "graphs/html2.gv" ; problem with html label, does not get detected as html `label=<long line 1<BR/>line 2<BR ALIGN="LEFT"/>line 3<BR ALIGN="RIGHT"/>>`
 
     "graphs/polypoly.gv" ; numeric ids like`0000`, leading zeroes get stripped results as `0`
     "share/polypoly.gv"
     "graphs/root.gv"}) ; `label=07` gets changed to `label=7`
 
-(def graphviz-test-dir "tmp/graphviz/tests/")
-
 (defn path-in-test-dir [path]
-  (str/replace-first (str path) graphviz-test-dir ""))
+  (str (fs/relativize graphviz-test-dir path)))
 
 (def all-test-files
   (->> (concat
@@ -91,10 +83,10 @@
   (doseq [file svg-roundtrip-files]
     (testing (str file)
       (let [input (slurp (fs/file file))]
-        ; (is (= (with-timeout (svg input))
-        ;        (with-timeout (svg (dc/dot (parser/parse input))))))
-        (is (= (svg input)
-               (svg (dc/dot (core/parse input)))))))))
+        ; (is (= (utils/with-timeout (utils/svg input))
+        ;        (utils/with-timeout (utils/svg (dc/dot (parser/parse input))))))
+        (is (= (utils/svg input)
+               (utils/svg (dc/dot (core/parse input)))))))))
 
 (deftest transform-rountrip
   (doseq [file transform-roundtrip-files]
@@ -125,9 +117,9 @@
             out (dc/dot (core/parse input))]
         (spit (str "tmp/dot/expected/" (path-in-test-dir file)) input)
         (spit (str "tmp/dot/actual/" (path-in-test-dir file)) out)
-        (with-timeout
-          (spit (str "tmp/svg/expected/" filename) (svg input)))
-        (with-timeout
-          (spit (str "tmp/svg/actual/" filename) (svg out))))
+        (utils/with-timeout
+          (spit (str "tmp/svg/expected/" filename) (utils/svg input)))
+        (utils/with-timeout
+          (spit (str "tmp/svg/actual/" filename) (utils/svg out))))
       (catch Exception _e
         (println "Failed on" file)))))
