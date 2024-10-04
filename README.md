@@ -10,7 +10,7 @@ It is extracted as a standalone library from [Stratify](https://github.com/dunda
 Add dependency to `deps.edn`:
 
 ```clojure
-{:deps {io.github.dundalek/theodora {:git/tag "" :git/sha ""}}}
+{:deps {io.github.dundalek/theodora {:git/tag "v0.1.0" :git/sha "21f3de0"}}}
 ```
 
 Use the `theodora.core/parse` function to parse a graph:
